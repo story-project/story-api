@@ -136,6 +136,9 @@ class User implements
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $deletedAt = null;
 
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Person $person = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -255,6 +258,28 @@ class User implements
     public function setDeletedAt(?DateTimeInterface $deletedAt): self
     {
         $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    public function getPerson(): ?Person
+    {
+        return $this->person;
+    }
+
+    public function setPerson(?Person $person): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($person === null && $this->person !== null) {
+            $this->person->setUser(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($person !== null && $person->getUser() !== $this) {
+            $person->setUser($this);
+        }
+
+        $this->person = $person;
 
         return $this;
     }
