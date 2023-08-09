@@ -6,34 +6,46 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\StoryRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StoryRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['story:read']],
+    denormalizationContext: ['groups' => ['story:write']],
+)]
+
 class Story
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['story:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['story:read', 'story:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['story:read', 'story:write'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['story:read', 'story:write'])]
     private ?string $text = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['story:read', 'story:write'])]
     private ?MediaObject $picture = null;
 
     #[ORM\ManyToOne(inversedBy: 'stories')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['story:read', 'story:write'])]
     private ?Category $category = null;
 
     #[ORM\ManyToOne(inversedBy: 'stories')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['story:read', 'story:write'])]
     private ?Person $creater = null;
 
     public function getId(): ?int

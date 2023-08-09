@@ -7,26 +7,35 @@ use App\Repository\PersonRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PersonRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['person:read', 'story:read']],
+    denormalizationContext: ['groups' => ['person:write']]
+)]
 class Person
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['person:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['person:read', 'person:write', 'story:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['person:read', 'person:write'])]
     private ?string $fullname = null;
 
     #[ORM\OneToOne(inversedBy: 'person', cascade: ['persist', 'remove'])]
+    #[Groups(['person:read', 'person:write'])]
     private ?User $user = null;
 
     #[ORM\OneToMany(mappedBy: 'creater', targetEntity: Story::class)]
+    #[Groups(['person:read'])]
     private Collection $stories;
 
     public function __construct()

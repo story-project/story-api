@@ -91,7 +91,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             name: 'changePassword',
         ),
     ],
-    normalizationContext: ['groups' => ['user:read', 'users:read']],
+    normalizationContext: ['groups' => ['user:read', 'users:read', 'person:read']],
     denormalizationContext: ['groups' => ['user:write']],
 )]
 #[ApiFilter(OrderFilter::class, properties: ['id', 'createdAt', 'updatedAt', 'email'])]
